@@ -117,14 +117,21 @@ class Sudoku:
         pos = self.get_row_col_from_mouse(mouse)
 
         if pos != None:
-            if self.selected == pos:
-                self.board[pos[0]][pos[1]].deselect()
-                self.selected = None
+            if not self.board[pos[0]][pos[1]].original:
+                if self.selected == pos:
+                    self.board[pos[0]][pos[1]].deselect()
+                    self.selected = None
+                else:
+                    self.board[pos[0]][pos[1]].select()
+                    if self.selected != None:
+                        self.board[self.selected[0]][self.selected[1]].deselect()
+                    self.selected = pos
             else:
-                self.board[pos[0]][pos[1]].select()
-                if self.selected != None:
-                    self.board[self.selected[0]][self.selected[1]].deselect()
-                self.selected = pos
+                pos = self.selected
+                if pos != None:
+                    self.board[pos[0]][pos[1]].deselect()
+                    self.selected = None
+
 
     def get_row_col_from_mouse(self, mouse):
         if mouse[0] < self.win.get_width() and mouse[1] < self.win.get_height():
