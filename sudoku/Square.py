@@ -5,7 +5,7 @@ Square class holds the numbers and positon for the sudoku game
 import pygame
 
 from sudoku.Constants import (BLACK, FONT, SQUARE_SIZE, WHITE, WIN_HEIGHT,
-                              WIN_WIDTH)
+                              WIN_WIDTH, RED)
 
 
 class Square:
@@ -29,6 +29,11 @@ class Square:
         self.x_c = 0
         self.y_c = 0
         self.get_center_pos()
+        self.selected = False
+        if self.value == 0:
+            self.original = False
+        else:
+            self.original = True
 
     def get_top_left_pos(self):
         """
@@ -53,13 +58,25 @@ class Square:
         """
         self.value = value
 
+    def select(self):
+        self.selected = True
+
+    def deselect(self):
+        self.selected = False
+
+
     def draw(self):
         """
         Draws the number to the center of the square
         """
-        text = FONT.render(str(self.value), True, BLACK)
-        rect = text.get_rect(center = (self.x_c, self.y_c))
-        self.win.blit(text, rect)
+
+        if self.selected:
+            pygame.draw.rect(self.win, RED, (self.x, self.y, SQUARE_SIZE, SQUARE_SIZE), 2)
+
+        if self.value != 0:
+            text = FONT.render(str(self.value), True, BLACK)
+            rect = text.get_rect(center = (self.x_c, self.y_c))
+            self.win.blit(text, rect)
 
     def draw_change(self, colour):
         """

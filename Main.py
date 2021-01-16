@@ -40,10 +40,35 @@ def main():
                 run = False
                 pygame.quit()
                 quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                sudoku.select(pygame.mouse.get_pos())
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_SPACE]:
             sudoku.solve()
+        if keys[pygame.K_DELETE]:
+            sudoku.delete()
+        if keys[pygame.K_RETURN]:
+            print(sudoku.check_board())
+        if keys[pygame.K_1]:
+            sudoku.play(1)
+        if keys[pygame.K_2]:
+            sudoku.play(2)
+        if keys[pygame.K_3]:
+            sudoku.play(3)
+        if keys[pygame.K_4]:
+            sudoku.play(4)
+        if keys[pygame.K_5]:
+            sudoku.play(5)
+        if keys[pygame.K_6]:
+            sudoku.play(6)
+        if keys[pygame.K_7]:
+            sudoku.play(7)
+        if keys[pygame.K_8]:
+            sudoku.play(8)
+        if keys[pygame.K_9]:
+            sudoku.play(9)
+
 
         sudoku.draw()
 

@@ -22,6 +22,7 @@ class Sudoku:
         self.rows = len(starting_board)
         self.cols = len(starting_board[0])
         self.board = [[Square(self.win, starting_board[i][j], i, j) for j in range(self.cols)] for i in range(self.rows)]
+        self.selected = None
 
 
     def print_board(self):
@@ -112,6 +113,73 @@ class Sudoku:
                     return (i,j)
         return None
 
+    def select(self, mouse):
+        pos = self.get_row_col_from_mouse(mouse)
+
+        if pos != None:
+            if self.selected == pos:
+                self.board[pos[0]][pos[1]].deselect()
+                self.selected = None
+            else:
+                self.board[pos[0]][pos[1]].select()
+                if self.selected != None:
+                    self.board[self.selected[0]][self.selected[1]].deselect()
+                self.selected = pos
+
+    def get_row_col_from_mouse(self, mouse):
+        if mouse[0] < self.win.get_width() and mouse[1] < self.win.get_height():
+            row = mouse[1] // SQUARE_SIZE
+            col = mouse[0] // SQUARE_SIZE
+
+            return (row, col)
+        return None
+
+    def play(self, num):
+        if self.selected != None:
+            if num > 0 and num < 10:
+                row, col = self.selected
+                self.board[row][col].set_value(num)
+                self.board[row][col].deselect()
+                self.selected = None
+
+
+    def delete(self):
+        if self.selected != None:
+            row, col = self.selected
+            self.board[row][col].set_value(0)
+            self.board[row][col].deselect()
+            self.selected = None
+
+    def check_board(self):
+        board = self.get_board_values()
+        for row in board:
+            if len(row) != len(set(row)):
+                return False
+
+        for col in board:
+            if len(col) != len(set(col)):
+                return False
+
+        for x in range(3):
+            for y in range(3):
+                box = []
+                for i in range(3):
+                    for j in range(3):
+                        box.append(board[3 * x + i][3 * y + j])
+                if len(box) != len(set(box)):
+                    return False
+
+        return True
+
+    def get_board_values(self):
+        board = []
+        for row in self.board:
+            r = []
+            for elem in row:
+                r.append(elem.value)
+            board.append(r)
+        return board
+
     def draw(self):
         """
         Draw this board to the screen
@@ -139,5 +207,4 @@ class Sudoku:
         """
         for row in self.board:
             for square in row:
-                if square.value != 0:
-                    square.draw()
+                square.draw()
