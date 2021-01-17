@@ -1,14 +1,8 @@
-from sudoku.Sudoku import Sudoku
+from sudoku.Data_Manager import Data_Manager
 
-BOARD = [[7, 8, 0, 4, 0, 0, 1, 2, 0],
-        [6, 0, 0, 0, 7, 5, 0, 0, 9],
-        [0, 0, 0, 6, 0, 1, 0, 7, 8],
-        [0, 0, 7, 0, 4, 0, 2, 6, 0],
-        [0, 0, 1, 0, 5, 0, 9, 3, 0],
-        [9, 0, 4, 0, 6, 0, 0, 0, 5],
-        [0, 7, 0, 3, 0, 0, 0, 1, 2],
-        [1, 2, 0, 0, 0, 7, 4, 0, 0],
-        [0, 4, 9, 2, 0, 6, 0, 0, 7]]
-
-s = Sudoku(0, BOARD)
-s.check_board()
+d = Data_Manager()
+d.active_level = 3
+d.get_level()
+d.set_difficulty("Easy")
+print(d.active_level)
+print(d.level_data)

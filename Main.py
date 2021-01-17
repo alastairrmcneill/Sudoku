@@ -8,26 +8,18 @@ import pygame
 
 from sudoku.Constants import WIN_HEIGHT, WIN_WIDTH
 from sudoku.Sudoku import Sudoku
-
-BOARD = [[7, 8, 0, 4, 0, 0, 1, 2, 0],
-        [6, 0, 0, 0, 7, 5, 0, 0, 9],
-        [0, 0, 0, 6, 0, 1, 0, 7, 8],
-        [0, 0, 7, 0, 4, 0, 2, 6, 0],
-        [0, 0, 1, 0, 5, 0, 9, 3, 0],
-        [9, 0, 4, 0, 6, 0, 0, 0, 5],
-        [0, 7, 0, 3, 0, 0, 0, 1, 2],
-        [1, 2, 0, 0, 0, 7, 4, 0, 0],
-        [0, 4, 9, 2, 0, 6, 0, 0, 7]]
+from sudoku.Data_Manager import Data_Manager
 
 WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 pygame.display.set_caption("Sudoku Sovler")
+data_manager = Data_Manager()
 
 def main():
     """
     Run this function to open the pygame winodw and then use sapcebar to solve the sudoku
     """
 
-    sudoku = Sudoku(WIN, BOARD)
+    sudoku = Sudoku(WIN,data_manager)
     run = True
     clock = pygame.time.Clock()
 
@@ -49,7 +41,10 @@ def main():
         if keys[pygame.K_DELETE]:
             sudoku.delete()
         if keys[pygame.K_RETURN]:
-            print(sudoku.check_board())
+            if not sudoku.ended:
+                sudoku.check_board()
+            else:
+                sudoku.reset()
         if keys[pygame.K_1]:
             sudoku.play(1)
         if keys[pygame.K_2]:

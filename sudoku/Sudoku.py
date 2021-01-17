@@ -5,12 +5,13 @@ The sudoku class, holds the baord, and solving method
 import pygame
 
 from sudoku.Constants import (BLACK, GREEN, RED, SQUARE_SIZE, WHITE,
-                              WIN_HEIGHT, WIN_WIDTH)
+                              SCREEN_HEIGHT, SCREEN_WIDTH, SMALL_FONT, FONT, WIN_HEIGHT, WIN_WIDTH)
 from sudoku.Square import Square
+from datetime import datetime, timedelta
 
 
 class Sudoku:
-    def __init__(self, win, starting_board):
+    def __init__(self, win, data_manager):
         """
         Init method for Sudoku class
 
@@ -19,10 +20,32 @@ class Sudoku:
             starting_board {list[list[int]]} -- 2D list of numbers representing the board
         """
         self.win = win
-        self.rows = len(starting_board)
-        self.cols = len(starting_board[0])
-        self.board = [[Square(self.win, starting_board[i][j], i, j) for j in range(self.cols)] for i in range(self.rows)]
+        self.screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.data_manager = data_manager
+        self.reset()
+
+    def reset(self):
+        self.message = ""
+        self.ended = False
+        self.rows = 0
+        self.cols = 0
+        self.board = 0
         self.selected = None
+        self.setup_board()
+        self.start_time = datetime.now().replace(microsecond = 0)
+        self.end_time = None
+
+    def setup_board(self):
+        self.data_manager.set_difficulty("Easy")
+        self.data_manager.get_next_level()
+        data = self.data_manager.level_data
+        self.data_manager.get_best_time()
+        self.best_time = int(self.data_manager.difficulty_best_time)
+
+        board = data["Board"]
+        self.rows = len(board)
+        self.cols = len(board[0])
+        self.board = [[Square(self.screen, board[i][j], i, j) for j in range(self.cols)] for i in range(self.rows)]
 
 
     def print_board(self):
@@ -57,13 +80,11 @@ class Sudoku:
         for num in range(1,10):
             if self.isValid(num, i, j):
                 self.board[i][j].set_value(num)
-                self.board[i][j].draw_change(GREEN)
 
                 if self.solve():
                     return True
 
                 self.board[i][j].set_value(0)
-                self.board[i][j].draw_change(RED)
         return False
 
 
@@ -134,7 +155,7 @@ class Sudoku:
 
 
     def get_row_col_from_mouse(self, mouse):
-        if mouse[0] < self.win.get_width() and mouse[1] < self.win.get_height():
+        if mouse[0] < self.screen.get_width() and mouse[1] < self.screen.get_height():
             row = mouse[1] // SQUARE_SIZE
             col = mouse[0] // SQUARE_SIZE
 
@@ -158,14 +179,15 @@ class Sudoku:
             self.selected = None
 
     def check_board(self):
+        ended = True
         board = self.get_board_values()
         for row in board:
             if len(row) != len(set(row)):
-                return False
+                ended = False
 
         for col in board:
             if len(col) != len(set(col)):
-                return False
+                ended = False
 
         for x in range(3):
             for y in range(3):
@@ -174,9 +196,19 @@ class Sudoku:
                     for j in range(3):
                         box.append(board[3 * x + i][3 * y + j])
                 if len(box) != len(set(box)):
-                    return False
+                    ended =  False
 
-        return True
+        if ended:
+            self.end_game()
+
+    def end_game(self):
+        self.ended = True
+        self.message = "Good job. Press ENTER progress"
+        self.end_time = datetime.now().replace(microsecond = 0)
+        game_time = self.end_time - self.start_time
+
+        self.data_manager.level_completed(game_time.total_seconds())
+        self.data_manager.write_data()
 
     def get_board_values(self):
         board = []
@@ -192,8 +224,13 @@ class Sudoku:
         Draw this board to the screen
         """
         self.win.fill(WHITE)
+        self.screen.fill(WHITE)
         self.draw_lines()
         self.draw_squares()
+        self.draw_time()
+        self.draw_best_time()
+        self.draw_message()
+        self.win.blit(self.screen, (0,0))
         pygame.display.update()
 
     def draw_lines(self):
@@ -205,8 +242,8 @@ class Sudoku:
                 thickness = 6
             else:
                 thickness = 1
-            pygame.draw.line(self.win, BLACK, (i * SQUARE_SIZE, 0), (i * SQUARE_SIZE, WIN_HEIGHT), thickness)
-            pygame.draw.line(self.win, BLACK, (0, i * SQUARE_SIZE), (WIN_WIDTH, i * SQUARE_SIZE), thickness)
+            pygame.draw.line(self.screen, BLACK, (i * SQUARE_SIZE, 0), (i * SQUARE_SIZE, SCREEN_HEIGHT), thickness)
+            pygame.draw.line(self.screen, BLACK, (0, i * SQUARE_SIZE), (SCREEN_WIDTH, i * SQUARE_SIZE), thickness)
 
     def draw_squares(self):
         """
@@ -215,3 +252,30 @@ class Sudoku:
         for row in self.board:
             for square in row:
                 square.draw()
+
+    def draw_time(self):
+        if self.ended:
+            game_time = self.end_time - self.start_time
+        else:
+            current_time = datetime.now().replace(microsecond = 0)
+            game_time = current_time -  self.start_time
+
+        game_time = str(game_time)
+        index = game_time.index(":") + 1
+        time_text = FONT.render(game_time[index:], True, BLACK)
+        rect = time_text.get_rect(midleft = (10, WIN_HEIGHT - 70))
+        self.win.blit(time_text, rect)
+
+    def draw_best_time(self):
+        best_time = timedelta(seconds = self.best_time)
+        best_time = str(best_time)
+        index = best_time.index(":") + 1
+        time_text = FONT.render("Best: " + best_time[index:], True, BLACK)
+        rect = time_text.get_rect(midright = (WIN_WIDTH - 10, WIN_HEIGHT - 70))
+        self.win.blit(time_text, rect)
+
+    def draw_message(self):
+        text = SMALL_FONT.render(self.message, True, BLACK)
+        rect = text.get_rect(midbottom = (WIN_WIDTH//2, WIN_HEIGHT - 5))
+        self.win.blit(text, rect)
+
