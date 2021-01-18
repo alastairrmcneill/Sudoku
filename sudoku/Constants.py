@@ -27,3 +27,7 @@ NUMBERS_FONT = pygame.font.SysFont("Chewed Pen BB", 40)
 
 # Paths
 BASE_PATH = os.path.dirname(os.path.dirname(__file__))
+
+# Imgs
+BG_IMG = pygame.Surface((WIN_WIDTH, WIN_HEIGHT))
+# pygame.image.load(os.path.join(BASE_PATH, "imgs/bg.png"))

@@ -10,6 +10,7 @@ class Data_Manager:
         self.active_level = 0
         self.level_data = {}
         self.difficulty_best_time = 0
+        self.difficulty = ""
 
     def get_data(self):
         with open(self.file_path, "r") as jsonFile:

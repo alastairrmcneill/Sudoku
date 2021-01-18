@@ -6,18 +6,32 @@ Ended: 16th January 2021
 """
 import pygame
 
-from sudoku.Constants import WIN_HEIGHT, WIN_WIDTH
+from sudoku.Constants import WIN_HEIGHT, WIN_WIDTH, BLACK, WHITE, GREY, BG_IMG
 from sudoku.Sudoku import Sudoku
 from sudoku.Data_Manager import Data_Manager
+from sudoku.Menu import Menu
+
 
 WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))
 pygame.display.set_caption("Sudoku Sovler")
 data_manager = Data_Manager()
 
+def setup_menu():
+    menu = Menu(WIN, data_manager, BG_IMG)
+    menu.add_button("Hard", (WIN_WIDTH // 2 - 75, WIN_HEIGHT - 75, 150, 50), GREY, BLACK, WHITE)
+    menu.add_button("Medium", (WIN_WIDTH // 2 - 75, WIN_HEIGHT - 150, 150, 50), GREY, BLACK, WHITE)
+    menu.add_button("Easy", (WIN_WIDTH // 2 - 75, WIN_HEIGHT - 225, 150, 50), GREY, BLACK, WHITE)
+    menu.add_text_box("<ESC> for main menu \n <ENTER> to check board \n <SPACE> to solve board for you", BLACK, (WIN_WIDTH // 2 , 275))
+    return menu
+
+
 def main():
     """
     Run this function to open the pygame winodw and then use sapcebar to solve the sudoku
     """
+
+    menu = setup_menu()
+    menu.run()
 
     sudoku = Sudoku(WIN,data_manager)
     run = True
@@ -36,6 +50,8 @@ def main():
                 sudoku.select(pygame.mouse.get_pos())
 
         keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            main()
         if keys[pygame.K_SPACE]:
             sudoku.solve()
         if keys[pygame.K_DELETE]:

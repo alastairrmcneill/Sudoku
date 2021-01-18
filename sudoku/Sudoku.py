@@ -26,6 +26,7 @@ class Sudoku:
 
     def reset(self):
         self.message = ""
+        self.started = False
         self.ended = False
         self.rows = 0
         self.cols = 0
@@ -36,7 +37,6 @@ class Sudoku:
         self.end_time = None
 
     def setup_board(self):
-        self.data_manager.set_difficulty("Easy")
         self.data_manager.get_next_level()
         data = self.data_manager.level_data
         self.data_manager.get_best_time()
