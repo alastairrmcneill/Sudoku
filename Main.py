@@ -54,6 +54,7 @@ def main():
             main()
         if keys[pygame.K_SPACE]:
             sudoku.solve()
+            sudoku.solve_end_game()
         if keys[pygame.K_DELETE]:
             sudoku.delete()
         if keys[pygame.K_RETURN]:

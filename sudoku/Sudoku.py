@@ -201,14 +201,19 @@ class Sudoku:
         if ended:
             self.end_game()
 
+    def solve_end_game(self):
+        self.ended = True
+        self.message = "Press ENTER progress."
+        self.end_time = datetime.now().replace(microsecond = 0)
+        self.data_manager.level_solved()
+
     def end_game(self):
         self.ended = True
-        self.message = "Good job. Press ENTER progress"
+        self.message = "Good job. Press ENTER progress."
         self.end_time = datetime.now().replace(microsecond = 0)
         game_time = self.end_time - self.start_time
 
         self.data_manager.level_completed(game_time.total_seconds())
-        self.data_manager.write_data()
 
     def get_board_values(self):
         board = []

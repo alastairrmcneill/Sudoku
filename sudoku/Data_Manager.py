@@ -44,7 +44,16 @@ class Data_Manager:
                             game["Done"] = True
                             game["Time"] = time
 
+        self.write_data()
+        self.get_data()
 
+    def level_solved(self):
+        for difficulty in self.data["Games"]:
+            for key in difficulty:
+                if key == self.difficulty:
+                    for game in difficulty[key]:
+                        if game["ID"] == self.active_level:
+                            game["Done"] = True
 
         self.write_data()
         self.get_data()

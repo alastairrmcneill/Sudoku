@@ -71,7 +71,6 @@ class Menu:
         Draw the menu to the screen
         """
         self.win.fill((255,255,255))
-        self.bg_img.fill((255, 255, 255))
         self.win.blit(self.bg_img, (0, 0))
         self.draw_buttons()
         self.draw_text_boxes()
